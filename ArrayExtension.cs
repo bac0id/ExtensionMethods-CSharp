@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 
 public static class ArrayExtension
 {
 	/// <summary>
-	/// Check the length of a given System.Array by 
-	/// <para>If length is not expected, a new array will be created, with newly-created objects or without </para>
+	/// Ensure the length of a <see cref="System.Array"/> is same to a given number.
 	/// </summary>
 	/// <param name="arr"></param>
 	/// <param name="expectedLength"></param>
@@ -13,12 +13,13 @@ public static class ArrayExtension
 		if (arr.Length != expectedLength) {
 			T[] correctData = new T[expectedLength];
 			if (arr.Length < expectedLength) {
-				// expected: 5 3 4 5
-				// actually: 5 3 4 _
+				// expected: arr = { _, _, _, _, _, _, }, len = 6;
+				// inputs: arr = { 4, 2, 1, 3, }, len = 4;
+				// return: arr = { 4, 2, 1, 3, 0, 0, }, len = 6;
 				Array.Copy(arr, correctData, arr.Length);
 				// fill the remaining part
 				for (int i = arr.Length; i < expectedLength; ++i) {
-					correctData[i] = default;
+					correctData[i] = (T)Activator.CreateInstance(typeof(T));
 				}
 			} else {
 				// throw the useless part
@@ -29,7 +30,7 @@ public static class ArrayExtension
 		return arr;
 	}
 	/// <summary>
-	/// Initializes every element of the value-type System.Array by a given value.
+	/// Initializes every element of the value-type <see cref="System.Array"/> by a given value.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="arr"></param>
@@ -40,7 +41,7 @@ public static class ArrayExtension
 		}
 	}
 	/// <summary>
-	/// Returns a random element in the Array.
+	/// Returns a random element in an <see cref="System.Array"/>.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	/// <param name="arr"></param>
@@ -48,5 +49,16 @@ public static class ArrayExtension
 	/// <returns></returns>
 	public static T GetRandomElement<T>(this T[] arr, Random random) {
 		return arr[random.Next(arr.Length)];
+	}
+	/// <summary>
+	/// Performs the specified action on each element of the <see cref="IEnumerable{T}"/>
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="value"></param>
+	/// <param name="action">The <see cref="Action"/> delegate to perform on each element of the <see cref="IEnumerable{T}"/></param>
+	public static void ForEach<T>(this IEnumerable<T> value, Action<T> action) {
+		foreach (T item in value) {
+			action(item);
+		}
 	}
 }
